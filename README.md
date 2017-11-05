@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/bertmelis/Ticker-esp32.svg?branch=master)](https://travis-ci.org/bertmelis/Ticker-esp32)
 
-This library acts as a compatability layer to add Ticker functionality as seen in the ESP8266 core for the Arduino environment. As such the same function calls can be used on ESP32 as on ESP8266.
+This library acts as a compatibility layer to add Ticker functionality as seen in the ESP8266 core for the Arduino environment. As such the same function calls can be used on ESP32 as on ESP8266.
 
 There are a number of differences and usage hints:
 * This lib uses software times from FreeRTOS
