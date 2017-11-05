@@ -7,7 +7,7 @@ This library acts as a compatibility layer to add Ticker functionality as seen i
 There are a number of differences and usage hints:
 * This lib uses software times from FreeRTOS
 * Callbacks are not handled in interrupts so an interrupt can still interfere in the callback-code
-* Although there are no interrupts involved, blocking code in the callback is supported
+* Although there are no interrupts involved, blocking code in the callback is not supported
 * As this library adds an extra interface, some inefficiency is introduced as compared to working directly with the (software) timers
 * Switching from a one-time timer to a repeating timer is not supported. Trying to will not work
 * Change Ticker behaviour from within an interrupt callback is not (yet?) supported
