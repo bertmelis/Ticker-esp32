@@ -41,7 +41,11 @@ Ticker::Ticker():
 Ticker::~Ticker() {
   if (_timerHandle) {
     xTimerDelete(_timerHandle, 0);
-    //to do: remove element from vector
+    for (uint8_t i = 0; i < _timers.size(); ++i) {
+      if (_timers.at(i)->_timerHandle == _timerHandle) {
+        _timers.erase(_timers.begin()+i);
+      }
+    }
   }
 }
 
