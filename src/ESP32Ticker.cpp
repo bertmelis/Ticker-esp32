@@ -1,5 +1,5 @@
 /* 
-  Ticker.h - esp32 library that calls functions periodically
+  ESP32Ticker.cpp - esp32 library that calls functions periodically
 
 	Copyright (c) 2017 Bert Melis. All rights reserved.
 	
@@ -22,7 +22,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "Ticker.h"
+#include "ESP32Ticker.h"
 
 std::vector<Ticker*> Ticker::_timers;
 

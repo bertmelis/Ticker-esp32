@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Ticker.h>
+#include <ESP32Ticker.h>
 
 Ticker blinker;
 Ticker toggler;

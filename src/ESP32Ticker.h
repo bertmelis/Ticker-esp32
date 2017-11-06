@@ -1,5 +1,5 @@
 /* 
-  Ticker.h - esp32 library that calls functions periodically
+  ESP32Ticker.h - esp32 library that calls functions periodically
 
 	Copyright (c) 2017 Bert Melis. All rights reserved.
 	
