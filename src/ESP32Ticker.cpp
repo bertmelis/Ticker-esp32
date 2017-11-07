@@ -67,5 +67,9 @@ void Ticker::_attach_ms(uint32_t milliseconds, bool repeat, callback_with_arg_t 
 }
 
 void Ticker::detach() {
-  xTimerStop(_timerHandle, 0);
+  if (_timerHandle) {
+    if (xTimerIsTimerActive(_timerHandle) == pdTRUE) {
+      xTimerStop(_timerHandle, 0);
+    }
+  }
 }

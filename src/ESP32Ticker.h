@@ -23,11 +23,10 @@
 */
 
 #pragma once
-#include <Arduino.h>
 #include <vector>
 extern "C" {
+	#include "freertos/FreeRTOS.h"
 	#include "freertos/timers.h"
-  typedef TimerHandle_t Timer;
 }
 
 class Ticker {
