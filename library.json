@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "keywords": "Arduino, timer, ticker, esp32",
   "description": "Ticker library for ESP32",
-  "homepage": "https://github.com/bertmelis/ESP32Ticker",
   "license": "MIT",
   "authors":
   [
@@ -21,18 +20,9 @@
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/bertmelis/ESP32Ticker",
+    "url": "https://github.com/bertmelis/Ticker-esp32.git",
     "branch": "master"
   },
   "frameworks": "arduino",
-  "platforms": "espressif32",
-  "export": {
-    "include": [
-      "LICENSE",
-      "keywords.txt",
-      "src/*",
-      "examples/*"
-    ]
-  },
-  "examples": "examples/*.ino"
+  "platforms": "espressif32"
 }
