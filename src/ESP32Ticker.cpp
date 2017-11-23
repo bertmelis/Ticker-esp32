@@ -27,11 +27,8 @@
 std::vector<Ticker*> Ticker::_timers;
 
 void Ticker::tickerCallback(TimerHandle_t timerHandle) {
-  for (uint8_t i = 0; i < _timers.size(); ++i) {
-    if (_timers.at(i)->_timerHandle == timerHandle) {
-      _timers.at(i)->_callback((void*)_timers.at(i)->_arg);
-    }
-  }
+  Ticker* ticker = _timers.at((size_t)pvTimerGetTimerID(timerHandle));
+  ticker->_callback((void*)ticker->_arg);
 }
 
 Ticker::Ticker():
@@ -56,7 +53,8 @@ void Ticker::_attach_ms(uint32_t milliseconds, bool repeat, callback_with_arg_t 
     xTimerChangePeriod(_timerHandle, milliseconds, 0);
   }
   else {
-    _timerHandle = xTimerCreate("Ticker", pdMS_TO_TICKS(milliseconds), (repeat)?pdTRUE:pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(&Ticker::tickerCallback));
+    size_t id = _timers.size();
+    _timerHandle = xTimerCreate("Ticker", pdMS_TO_TICKS(milliseconds), (repeat)?pdTRUE:pdFALSE, (void*)id, reinterpret_cast<TimerCallbackFunction_t>(&Ticker::tickerCallback));
     if (_timerHandle == NULL) {
     }
     else {
