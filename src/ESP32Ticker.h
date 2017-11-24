@@ -21,9 +21,10 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
 #pragma once
-#include <vector>
+
+#define MAX_NUMER_TICKERS 10
+
 extern "C" {
 	#include "freertos/FreeRTOS.h"
 	#include "freertos/timers.h"
@@ -89,7 +90,7 @@ public:
 
 protected:
 	void _attach_ms(uint32_t milliseconds, bool repeat, callback_with_arg_t callback, uint32_t arg);
-	static std::vector<Ticker*> _timers;
+	static Ticker* _timers[MAX_NUMER_TICKERS];
 	TimerHandle_t _timerHandle;
 	callback_with_arg_t _callback;
 	uint32_t _arg;

@@ -24,10 +24,10 @@
 
 #include "ESP32Ticker.h"
 
-std::vector<Ticker*> Ticker::_timers;
+Ticker* Ticker::_timers[10] = {nullptr};
 
 void Ticker::tickerCallback(TimerHandle_t timerHandle) {
-  Ticker* ticker = _timers.at((size_t)pvTimerGetTimerID(timerHandle));
+  Ticker* ticker = _timers[(uint32_t)pvTimerGetTimerID(timerHandle)];
   ticker->_callback((void*)ticker->_arg);
 }
 
@@ -37,12 +37,8 @@ Ticker::Ticker():
 
 Ticker::~Ticker() {
   if (_timerHandle) {
+    _timers[(uint32_t)pvTimerGetTimerID(_timerHandle)] = nullptr;
     xTimerDelete(_timerHandle, 0);
-    for (uint8_t i = 0; i < _timers.size(); ++i) {
-      if (_timers.at(i)->_timerHandle == _timerHandle) {
-        _timers.erase(_timers.begin()+i);
-      }
-    }
   }
 }
 
@@ -53,13 +49,18 @@ void Ticker::_attach_ms(uint32_t milliseconds, bool repeat, callback_with_arg_t 
     xTimerChangePeriod(_timerHandle, milliseconds, 0);
   }
   else {
-    size_t id = _timers.size();
-    _timerHandle = xTimerCreate("Ticker", pdMS_TO_TICKS(milliseconds), (repeat)?pdTRUE:pdFALSE, (void*)id, reinterpret_cast<TimerCallbackFunction_t>(&Ticker::tickerCallback));
+    uint32_t vacant_position = 0;
+    while (_timers[vacant_position]) {
+      ++vacant_position;
+      if (vacant_position > 9) return;  // array is full
+    }
+    _timerHandle = xTimerCreate("Ticker", pdMS_TO_TICKS(milliseconds), (repeat)?pdTRUE:pdFALSE, (void*)vacant_position, reinterpret_cast<TimerCallbackFunction_t>(&Ticker::tickerCallback));
     if (_timerHandle == NULL) {
+      //Timer was not created
     }
     else {
       xTimerStart(_timerHandle, 0);
-      _timers.push_back(this);
+      _timers[vacant_position] = this;
     }
   }
 }
