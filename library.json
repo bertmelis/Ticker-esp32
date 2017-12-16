@@ -24,5 +24,8 @@
     "branch": "master"
   },
   "frameworks": "arduino",
-  "platforms": "espressif32"
+  "platforms": "espressif32",
+  "build": {
+    "libCompatMode": 2
+  }   
 }
