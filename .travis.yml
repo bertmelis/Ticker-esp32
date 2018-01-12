@@ -11,9 +11,11 @@ cache:
 env:
     - PLATFORMIO_CI_SRC=examples/Blinker/Blinker.ino
     - PLATFORMIO_CI_SRC=examples/Arguments/Arguments.ino
+    - CPPLINT=true
 
 install:
     - pip install -U platformio
+    - pip install -U cpplint
 
 script:
-    - platformio ci --board=lolin32 --lib="./src"
+    - if [[ "$CPPLINT" ]]; then cpplint --repository=. --recursive --linelength=200 --filter=-build/include  ./src; else platformio ci --board=lolin32 --lib="./src"; fi
