@@ -24,11 +24,11 @@
 
 #include "ESP32Ticker.h"
 
-Ticker* Ticker::_timers[10] = {nullptr};
+Ticker* Ticker::_timers[MAX_NUMBER_TICKERS] = {nullptr};
 
 void Ticker::tickerCallback(TimerHandle_t timerHandle) {
   Ticker* ticker = _timers[(uint32_t)pvTimerGetTimerID(timerHandle)];
-  ticker->_callback((void*)ticker->_arg);
+  ticker->_callback(reinterpret_cast<void*>(ticker->_arg));
 }
 
 Ticker::Ticker():
@@ -47,18 +47,20 @@ void Ticker::_attach_ms(uint32_t milliseconds, bool repeat, callback_with_arg_t 
   _arg = arg;
   if (_timerHandle) {
     xTimerChangePeriod(_timerHandle, milliseconds, 0);
-  }
-  else {
+  } else {
     uint32_t vacant_position = 0;
     while (_timers[vacant_position]) {
       ++vacant_position;
-      if (vacant_position > 9) return;  // array is full
+      if (vacant_position > MAX_NUMBER_TICKERS - 1) return;  // array is full
     }
-    _timerHandle = xTimerCreate("Ticker", pdMS_TO_TICKS(milliseconds), (repeat)?pdTRUE:pdFALSE, (void*)vacant_position, reinterpret_cast<TimerCallbackFunction_t>(&Ticker::tickerCallback));
+    _timerHandle = xTimerCreate("Ticker",  // arbitrary name
+                                pdMS_TO_TICKS(milliseconds),  // milliseconds --> ticks
+                                (repeat)?pdTRUE:pdFALSE,  // pdTrue: repeating, pdFalse, one-shot
+                                reinterpret_cast<void*>(vacant_position),  // timer ID, used to identify in callback
+                                reinterpret_cast<TimerCallbackFunction_t>(&Ticker::tickerCallback));  // callback function
     if (_timerHandle == NULL) {
-      //Timer was not created
-    }
-    else {
+      // Timer was not created
+    } else {
       xTimerStart(_timerHandle, 0);
       _timers[vacant_position] = this;
     }

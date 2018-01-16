@@ -1,6 +1,6 @@
 {
   "name": "Ticker-esp32",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": "Arduino, timer, ticker, esp32",
   "description": "Ticker library for ESP32",
   "license": "MIT",
