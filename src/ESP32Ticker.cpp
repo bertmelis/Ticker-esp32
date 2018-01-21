@@ -24,53 +24,35 @@
 
 #include "ESP32Ticker.h"
 
-Ticker* Ticker::_timers[MAX_NUMBER_TICKERS] = {nullptr};
-
-void Ticker::tickerCallback(TimerHandle_t timerHandle) {
-  Ticker* ticker = _timers[(uint32_t)pvTimerGetTimerID(timerHandle)];
-  ticker->_callback(reinterpret_cast<void*>(ticker->_arg));
-}
-
-Ticker::Ticker():
-  _timerHandle(nullptr) {
-}
+Ticker::Ticker() :
+  _timer(nullptr) {}
 
 Ticker::~Ticker() {
-  if (_timerHandle) {
-    _timers[(uint32_t)pvTimerGetTimerID(_timerHandle)] = nullptr;
-    xTimerDelete(_timerHandle, 0);
-  }
+  detach();
 }
 
 void Ticker::_attach_ms(uint32_t milliseconds, bool repeat, callback_with_arg_t callback, uint32_t arg) {
-  _callback = callback;
-  _arg = arg;
-  if (_timerHandle) {
-    xTimerChangePeriod(_timerHandle, milliseconds, 0);
+  esp_timer_create_args_t _timerConfig;
+  _timerConfig.arg = reinterpret_cast<void*>(arg);
+  _timerConfig.callback = callback;
+  _timerConfig.dispatch_method = ESP_TIMER_TASK;
+  _timerConfig.name = "Ticker";
+  if (_timer) {
+    esp_timer_stop(_timer);
+    esp_timer_delete(_timer);
+  }
+  esp_timer_create(&_timerConfig, &_timer);
+  if (repeat) {
+    esp_timer_start_periodic(_timer, milliseconds * 1000);
   } else {
-    uint32_t vacant_position = 0;
-    while (_timers[vacant_position]) {
-      ++vacant_position;
-      if (vacant_position > MAX_NUMBER_TICKERS - 1) return;  // array is full
-    }
-    _timerHandle = xTimerCreate("Ticker",  // arbitrary name
-                                pdMS_TO_TICKS(milliseconds),  // milliseconds --> ticks
-                                (repeat)?pdTRUE:pdFALSE,  // pdTrue: repeating, pdFalse, one-shot
-                                reinterpret_cast<void*>(vacant_position),  // timer ID, used to identify in callback
-                                reinterpret_cast<TimerCallbackFunction_t>(&Ticker::tickerCallback));  // callback function
-    if (_timerHandle == NULL) {
-      // Timer was not created
-    } else {
-      xTimerStart(_timerHandle, 0);
-      _timers[vacant_position] = this;
-    }
+    esp_timer_start_once(_timer, milliseconds * 1000);
   }
 }
 
 void Ticker::detach() {
-  if (_timerHandle) {
-    if (xTimerIsTimerActive(_timerHandle) == pdTRUE) {
-      xTimerStop(_timerHandle, 0);
-    }
+  if (_timer) {
+    esp_timer_stop(_timer);
+    esp_timer_delete(_timer);
+    _timer = nullptr;
   }
 }
