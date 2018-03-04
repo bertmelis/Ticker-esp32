@@ -1,3 +1,7 @@
+# Deprecated
+
+This Ticker library has just been merged into the Arduino core for ESP32. This repo will not be maintained anymore.
+
 # Ticker library for esp32
 
 [![Build Status](https://travis-ci.org/bertmelis/Ticker-esp32.svg?branch=master)](https://travis-ci.org/bertmelis/Ticker-esp32)
